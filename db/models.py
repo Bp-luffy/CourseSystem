@@ -33,12 +33,19 @@ class Admin(Base):
         school_obj.save()
 
     # 创建课程
-    def create_course(self):
-        pass
+    def create_course(self, school_obj, course_name):
+        # 1.调用课程类，实例化创建课程
+        course_obj = Course(course_name)
+        course_obj.save()
+        # 2.获取当前学校对象，并将课程添加到课程列表
+        school_obj.course_list.append(course_name)
+        school_obj.save()
 
     # 创建讲师
-    def create_teacher(self):
-        pass
+    def create_teacher(self, teacher_name, teacher_pwd):
+        # 1.调用老师类，实例化的到老师对象，并保存
+        teacher_obj = Teacher(teacher_name, teacher_pwd)
+        teacher_obj.save()
 
 
 # 学校类
@@ -58,8 +65,14 @@ class Student(Base):
 
 # 课程类
 class Course(Base):
-    pass
+    def __init__(self, course_name):
+        self.user = course_name
+        self.student_list = []
 
 
 class Teacher(Base):
-    pass
+    def __init__(self, teacher_name, pwd):
+        self.user = teacher_name
+        # self.pwd需要统一
+        self.pwd = pwd
+        self.course_list_from_teacher = []

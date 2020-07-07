@@ -49,3 +49,29 @@ def create_school_interface(school_name, school_addr, admin_name):
 
     # 4.返回创建学校成功给视图层
     return True, f'[{school_name}]学校创建成功！'
+
+
+# 管理员创建课程接口
+def create_course_interface(school_name, course_name, admin_name):
+    # 1.查看课程是否存在
+    # 1.1 先获取学校对象中的课程列表
+    school_obj = models.School.select(school_name)
+    # 1.2 判断当前课程是否存在课程列表中
+    if course_name in school_obj.course_list:
+        return False, '当前课程已存在'
+    # 2 若课程不存在，则创建课程，由管理员来创建
+    admin_obj = models.Admin.select(admin_name)
+    admin_obj.create_course(school_obj, course_name)
+    return True, f'[{course_name}] 课程创建成功，绑定给[{school_name}] 校区'
+
+
+# 管理员创建老师接口
+def create_teacher_interface(teacher_name, admin_name, teacher_pwd='123'):
+    # 1.判断老师是否存在
+    teacher_obj = models.Teacher.select(teacher_name)
+    # 2.若存在，则返回不能创建
+    if teacher_obj: return False, '老师已存在'
+    # 3.若不存在，则创建老师，让管理员创建老师
+    amdin_obj = models.Admin.select(admin_name)
+    amdin_obj.create_teacher(teacher_name, teacher_pwd)
+    return True, f'[{teacher_name}] 老师创建成功！'

@@ -2,6 +2,7 @@
 
 from interface import admin_interface
 from lib import common
+from interface import common_interface
 
 admin_info = {'user': None}
 
@@ -64,13 +65,55 @@ def create_school():
 # 管理员创建课程
 @common.auth('admin')
 def create_course():
-    pass
+    while True:
+        # 1.让管理员先选择学校
+        # 1.1 调用接口，获取所有学校的名称并打印
+        flag, school_list_or_msg = common_interface.get_all_school_interface()
+        if not flag:
+            print(school_list_or_msg)
+            break
+
+        for index, school_name in enumerate(school_list_or_msg):
+            print(f'编号：{index}   学校名：{school_name}')
+
+        choice = input('请输入学校编号：').strip()
+
+        if not choice.isdigit():
+            print('请输入数字')
+            continue
+        choice = int(choice)
+        if choice not in range(len(school_list_or_msg)):
+            print('请输入正确编号！')
+            continue
+        # 获取选择后的学校名字
+        school_name = school_list_or_msg[choice]
+
+        # 2.选择学校后，再输入课程名称
+        course_name = input('请输入需要创建的课程名称：').strip()
+
+        # 3.调用创建课程接口，让管理员区创建课程
+        flag, msg = admin_interface.create_course_interface(school_name, course_name,
+                                                            admin_info.get('user'))  # 传递学校的目的，是为来关联课程
+        if flag:
+            print(msg)
+            break
+        else:
+            print(msg)
 
 
 # 管理员创建老师
 @common.auth('admin')
 def create_teacher():
-    pass
+    while True:
+        # 1.让管理员输入创建的老师名字
+        teacher_name = input('请输入老师的名字：').strip()
+        # 2.调用接口创建老师
+        flag, msg = admin_interface.create_teacher_interface(teacher_name, admin_info.get('user'))
+        if flag:
+            print(msg)
+            break
+        else:
+            print(msg)
 
 
 func_dict = {
