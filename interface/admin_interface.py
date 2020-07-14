@@ -19,7 +19,7 @@ def admin_register_interface(username, password):
 
 
 # 管理员登录接口
-def admin_login_interface(username, password):
+"""def admin_login_interface(username, password):
     # 1.判断用户是否存在
     admin_obj = models.Admin.select(username)
 
@@ -31,7 +31,7 @@ def admin_login_interface(username, password):
     if password == admin_obj.pwd:
         return True, '登录成功'
     else:
-        return False, '密码错误'
+        return False, '密码错误'"""
 
 
 # 管理员创建学校接口
