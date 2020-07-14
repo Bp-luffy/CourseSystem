@@ -1,5 +1,3 @@
-# coding=utf-8
-
 '''
 角色：学校，学员、课程、讲师、管理员
 '''
@@ -60,7 +58,31 @@ class School(Base):
 
 # 学生类
 class Student(Base):
-    pass
+    def __init__(self, user, pwd):
+        self.user = user
+        self.pwd = pwd
+        # 每个学生只能有一个校区
+        self.school = None
+        # 一个学生可以选择多门课程
+        self.course_list = []
+        self.score_dict = {}  # {"course_name":0}
+
+    # 学生添加学校方法
+    def add_school(self, school_name):
+        self.school = school_name
+        self.save()
+
+    # 学生添加课程方法
+    def add_course(self, course_name):
+        # 1.学生课程列表添加课程
+        self.course_list.append(course_name)
+        # 2.给学生选择的课程设置默认分数
+        self.score_dict[course_name] = 0
+        self.save()
+        # 3.学生选择的课程对象，添加学生
+        course_obj = Course.select(course_name)
+        course_obj.student_list.append(self.user)
+        course_obj.save()
 
 
 # 课程类
@@ -76,3 +98,25 @@ class Teacher(Base):
         # self.pwd需要统一
         self.pwd = pwd
         self.course_list_from_teacher = []
+
+    # 老师添加课程方法
+    def add_course(self, course_name):
+        self.course_list_from_teacher.append(course_name)
+        self.save()
+
+    # 老师查看教授课程方法
+    def show_course(self):
+        return self.course_list_from_teacher
+
+    # 老师获取课程下学生方法
+    def get_student(self, course_name):
+        course_obj = Course.select(course_name)
+        return course_obj.student_list
+
+    # 老师修改学生分数方法
+    def change_score(self, course_name, student_name, score):
+        # 1.获取学生对象
+        student_obj = Student.select(student_name)
+        # 2.再给学生对象中的课程修改分数
+        student_obj.score_dict[course_name] = score
+        student_obj.save()
